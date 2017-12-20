@@ -1,143 +1,119 @@
-
+import os
+clear = lambda: os.system('cls')
 def display_board(board):
-    for row in board:
-        print(row)
-    pass
+    clear()
+    print('   |   |')
+    print(' ' + board[7] + ' | ' + board[8] + ' | ' + board[9])
+    print('   |   |')
+    print('-----------')
+    print('   |   |')
+    print(' ' + board[4] + ' | ' + board[5] + ' | ' + board[6])
+    print('   |   |')
+    print('-----------')
+    print('   |   |')
+    print(' ' + board[1] + ' | ' + board[2] + ' | ' + board[3])
+    print('   |   |')
 
 def player_input():
-    player1 = ''
-    while player1 == '':
-        player1 = input('Player1 chose your Symbol: X or O \n').upper()
-        if (player1 != 'X') and (player1 != 'O'):
-            player1 = ''
-    if player1 == 'X':
-        player2 = 'O'
-        print('Sorry Player2 for you only left: ' + player2)
-    else:
-        player2 = 'X'
-        print('Sorry Player2 for you only left: '+ player2)
-    pass
-
-def place_marker(board, marker, position):
-    x = 0
-    o = 0
+    marker = ''
+    while not (marker == 'X' or marker == 'O'):
+        marker = input('Player 1: Do you want to be X or O?\n').upper()
 
     if marker == 'X':
-        if position == '1':
-            x += board[0][0]
-            board [0][0] = 'X'
-        elif position == '2':
-            x += board[0][1]
-            board [0][1] = 'X'
-        elif position == '3':
-            x += board[0][2]
-            board [0][2] = 'X'
-        elif position == '4':
-            x += board[1][0]
-            board [1][0] = 'X'
-        elif position == '5':
-            x += board[1][1]
-            board[1][1] = 'X'
-        elif position == '6':
-            x += board[1][2]
-            board [1][2] = 'X'
-        elif position == '7':
-            x += board[2][0]
-            board [2][0] = 'X'
-        elif position == '8':
-            x += board[2][1]
-            board [2][1] = 'X'
-        elif position == '9':
-            x += board[2][2]
-            board [2][2] = 'X'
-        else:
-            print('num sei')
-
-    if marker == 'O':
-        if position == '1':
-            o += board[0][0]
-            board [0][0] = 'O'
-        elif position == '2':
-            o += board[0][1]
-            board [0][1] = 'O'
-        elif position == '3':
-            o += board[0][2]
-            board [0][2] = 'O'
-        elif position == '4':
-            o += board[1][0]
-            board [1][0] = 'O'
-        elif position == '5':
-            o += board[1][1]
-            board[1][1] = 'O'
-        elif position == '6':
-            o += board[1][2]
-            board [1][2] = 'O'
-        elif position == '7':
-            o += board[2][0]
-            board [2][0] = 'O'
-        elif position == '8':
-            o += board[2][1]
-            board [2][1] = 'O'
-        elif position == '9':
-            o += board[2][2]
-            board [2][2] = 'O'
-        else:
-            print('num sei')
-
-        if x == 15:
-            win_check('X')
-        elif o == 15:
-            win_check('O')
-        else:
-            win_check('Draw')
-
-  #  positions = {'1': '[0][0]', '2': '[0][1]', '3': '[0][2]',
-  #               '4': '[1][0]', '5': '[1][1]', '6': '[1][2]',
-  #               '7': '[2][0]', '8': '[2][1]', '9': '[2][2]'}
-    pass
-
-def win_check(mark):
-    if mark == 'Draw':
-        print('Draw nobody won!')
+        return ('X', 'O')
     else:
-        print(mark+' won!')
-    pass
+        return ('O', 'X')
+
+def place_marker(board, marker, position):
+    board[position] = marker
+
+def win_check(board,mark):
+    return ((board[7] == mark and board[8] == mark and board[9] == mark) or  # across the top
+            (board[4] == mark and board[5] == mark and board[6] == mark) or  # across the middle
+            (board[1] == mark and board[2] == mark and board[3] == mark) or  # across the bottom
+            (board[7] == mark and board[4] == mark and board[1] == mark) or  # down the middle
+            (board[8] == mark and board[5] == mark and board[2] == mark) or  # down the middle
+            (board[9] == mark and board[6] == mark and board[3] == mark) or  # down the right side
+            (board[7] == mark and board[5] == mark and board[3] == mark) or  # diagonal
+            (board[9] == mark and board[5] == mark and board[1] == mark))  # diagonal
 
 import random
 def choose_first():
-    if random.randint(1,2) == 1:
-        return 'X'
+    if random.randint(0, 1) == 0:
+        return 'Player 2'
     else:
-        return 'O'
+        return 'Player 1'
+
+def space_check(board, position):
+    return board[position] == ' '
+
+def full_board_check(board):
+    for i in range(1,10):
+        if space_check(board, i):
+            return False
+    return True
+
+
+def player_choice(board):
+    # Using strings because of raw_input
+    position = ' '
+    while position not in '1 2 3 4 5 6 7 8 9'.split() or not space_check(board, int(position)):
+        position = input('Choose your next position: (1-9) \n')
+    return int(position)
+
+
+def replay():
+    return input('Do you want to play again? Enter Yes or No: \n').lower().startswith('y')
+
 
 print('Welcome to Tic Tac Toe!')
-l_1 = [2, 7, 6]
-l_2 = [9, 5, 1]
-l_3 = [4, 3, 8]
-board = ([l_1, l_2, l_3])
 
-display_board(board)
-player_input()
+while True:
+    # Reset the board
+    theBoard = [' '] * 10
+    player1_marker, player2_marker = player_input()
+    turn = choose_first()
+    print(turn + ' will go first.')
+    game_on = True
 
-first = choose_first()
-if first == 'X':
-    x = 1
-    o = 0
-else:
-    x = 0
-    o = 1
+    while game_on:
+        if turn == 'Player 1':
+            # Player1's turn.
 
-Lix = 0
-while Lix < 9:
-    if x == 1:
-        print('X is your turn')
-        position = input('write the number of the position where you wanna put your symbol')
-        place_marker(board, first, position)
-        x = 0
-    else:
-        print('O is your turn')
-        position = input('write the number of the position where you wanna put your symbol')
-        place_marker(board, first, position)
-        x = 1
-    Lix += Lix
+            display_board(theBoard)
+            position = player_choice(theBoard)
+            place_marker(theBoard, player1_marker, position)
 
+            if win_check(theBoard, player1_marker):
+                display_board(theBoard)
+                print('Congratulations! You have won the game!')
+                game_on = False
+            else:
+                if full_board_check(theBoard):
+                    display_board(theBoard)
+                    print('The game is a draw!')
+                    break
+                else:
+                    turn = 'Player 2'
+
+        else:
+            # Player2's turn.
+
+            display_board(theBoard)
+            position = player_choice(theBoard)
+            place_marker(theBoard, player2_marker, position)
+
+            if win_check(theBoard, player2_marker):
+                display_board(theBoard)
+                print('Player 2 has won!')
+                game_on = False
+            else:
+                if full_board_check(theBoard):
+                    display_board(theBoard)
+                    print('The game is a tie!')
+                    break
+                else:
+                    turn = 'Player 1'
+
+    if not replay():
+        break
