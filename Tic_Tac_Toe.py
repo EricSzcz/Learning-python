@@ -110,7 +110,7 @@ while True:
             else:
                 if full_board_check(theBoard):
                     display_board(theBoard)
-                    print('The game is a tie!')
+                    print('The game is a draw!')
                     break
                 else:
                     turn = 'Player 1'
